@@ -2,13 +2,15 @@ import InputComp from "@/components/inputComp";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import React from "react";
 import { BsEye } from "react-icons/bs";
+import { FaExternalLinkAlt } from "react-icons/fa";
+import { FaRegCopy } from "react-icons/fa";
+import { RiDeleteBin6Line } from "react-icons/ri";
 
 const Dashboard: React.FC = () => {
   return (
@@ -27,27 +29,34 @@ const Dashboard: React.FC = () => {
 
         <InputComp />
       </div>
-      <div className="container mt-5 flex gap-3">
+      <div className="container mt-20 flex gap-3">
         <Card>
           <CardHeader>
             <CardTitle>Create project</CardTitle>
           </CardHeader>
           <CardContent>
-            <a href="">Deploy your new project.</a>
+            <a href="" className="flex items-center">
+              Deploy your new project
+              <FaExternalLinkAlt
+                className="text-orange-500 ms-2"
+                style={{ fontSize: "14px" }}
+              />
+            </a>
           </CardContent>
-          <CardFooter>
-            <BsEye />
-          </CardFooter>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Create project</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <a href="">Deploy your new project.</a>
-          </CardContent>
-          <CardFooter>
-            <BsEye />
+          <CardFooter className=" flex items-center justify-between">
+            <div className="flex items-center">
+              <BsEye className="text-orange-100 opacity-65" />
+              <span
+                className="opacity-65 ms-2 italic"
+                style={{ fontSize: "14px" }}
+              >
+                654
+              </span>
+            </div>
+            <span className="opacity-10 italic mx-2">|</span>
+            <span className="opacity-65">5 min ago</span>
+            <FaRegCopy className="text-lg mx-2 text-blue-500 cursor-pointer" />
+            <RiDeleteBin6Line className="text-lg text-red-600 cursor-pointer" />
           </CardFooter>
         </Card>
       </div>

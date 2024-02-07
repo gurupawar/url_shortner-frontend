@@ -37,7 +37,7 @@ const InputComp: React.FC = () => {
         />
         <Button
           onClick={handleSubmit}
-          className="bg-orange-500 text-white rounded-sm py-5 ml-2"
+          className="bg-orange-500 text-white rounded-sm py-5 ml-2 hover:bg-orange-400"
         >
           Shorten URL
         </Button>
@@ -70,7 +70,7 @@ const InputComp: React.FC = () => {
               <PopoverTrigger asChild>
                 <Button
                   style={{ minHeight: "41.6px" }}
-                  className="bg-gray-100 bg-opacity-30 text-white rounded-sm py-5 flex justify-start"
+                  className="bg-gray-100 bg-opacity-30 text-white rounded-sm py-5 flex justify-start hover:bg-gray-100 hover:bg-opacity-40 focus:outline-none w-full text-left px-3 border border-gray-500 text-opacity-100"
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
                   {date ? format(date, "PPP") : <span>Pick a date</span>}

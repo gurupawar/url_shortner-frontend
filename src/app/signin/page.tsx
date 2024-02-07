@@ -1,22 +1,49 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 import React from "react";
 
-const SignUp: React.FC = () => {
+const SignIn: React.FC = () => {
+  const router = useRouter();
   const [email, setEmail] = React.useState<string>("test@test.com");
   const [password, setPassword] = React.useState<string>("123456");
   const [error, setError] = React.useState<string>("");
 
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
-    console.log("clicked");
+    try {
+      const response = await fetch("http://localhost:3000/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      // Access the response body
+      const responseData = await response.json();
+
+      if (responseData.status === 401) {
+        console.log(responseData.message);
+        setError(responseData.message);
+      } else if (responseData.status === 200) {
+        localStorage.setItem("user", JSON.stringify(responseData.user));
+        router.push("/dashboard");
+      }
+    } catch (error) {
+      console.error("Error posting data:", error);
+    }
   };
+
   return (
     <div className="container mx-auto py-5 max-w-lg">
-      <h1 className="text-left text-3xl font-bold text-orange-500">
-        Join ShortME, <span className="text-blue-500">Save Time</span> Today
+      <h1 className="text-center text-4xl font-bold text-orange-500">
+        Get <span className="text-blue-500">Started</span> Today
       </h1>
-      <p className="text-left mt-2">Dont think about it. do it!</p>
+      <p className="text-center mt-2">
+        Hey 👋 buddy! Listen, login to your accound now so that you can manage
+        all your shorten links more securly!
+      </p>
       <form
         onSubmit={handleSubmit}
         className="mt-10  rounded-sm bg-gray-500 bg-opacity-30 shadow-sm p-5"
@@ -64,4 +91,4 @@ const SignUp: React.FC = () => {
   );
 };
 
-export default SignUp;
+export default SignIn;
