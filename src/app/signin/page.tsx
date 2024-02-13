@@ -1,16 +1,22 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React from "react";
+import { useMyContext } from "../../context/MyContext";
 
 const SignIn: React.FC = () => {
   const router = useRouter();
   const [email, setEmail] = React.useState<string>("test@test.com");
   const [password, setPassword] = React.useState<string>("123456");
   const [error, setError] = React.useState<string>("");
+  const [loading, setLoading] = React.useState<boolean>(false);
+  const { localValueSetter } = useMyContext();
 
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
+    setLoading(true);
+
     try {
       const response = await fetch("http://localhost:3000/auth/login", {
         method: "POST",
@@ -23,10 +29,12 @@ const SignIn: React.FC = () => {
       // Access the response body
       const responseData = await response.json();
 
-      if (responseData.status === 401) {
+      if (!responseData.user) {
         console.log(responseData.message);
         setError(responseData.message);
-      } else if (responseData.status === 200) {
+        setLoading(false);
+      } else if (responseData.user) {
+        localValueSetter(responseData.user);
         localStorage.setItem("user", JSON.stringify(responseData.user));
         router.push("/dashboard");
       }
@@ -77,14 +85,14 @@ const SignIn: React.FC = () => {
           disabled={!email || !password}
           className="block w-full my-5 rounded-sm text-white bg-blue-500 hover:bg-blue-600"
         >
-          Sign In
+          {loading ? "Loading..." : "Login"}
         </Button>
 
         <p className="text-sm text-center">
           <span className="op"> No account? </span>
-          <a href="/signup" className="text-blue-500">
+          <Link href="/signup" className="text-blue-500">
             Sign Up
-          </a>
+          </Link>
         </p>
       </form>
     </div>

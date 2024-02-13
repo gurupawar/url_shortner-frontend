@@ -1,3 +1,4 @@
+"use client";
 import InputComp from "@/components/inputComp";
 import {
   Card,
@@ -6,13 +7,47 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import React from "react";
+import { useMyContext } from "@/context/MyContext";
+import React, { useEffect } from "react";
 import { BsEye } from "react-icons/bs";
 import { FaExternalLinkAlt } from "react-icons/fa";
 import { FaRegCopy } from "react-icons/fa";
 import { RiDeleteBin6Line } from "react-icons/ri";
 
+type RequestBody = {
+  _id: string | undefined;
+};
+
 const Dashboard: React.FC = () => {
+  const { token } = useMyContext();
+  const [urlList, setUrlList] = React.useState<string[]>([]);
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+
+  const requestBody: RequestBody = {
+    _id: token?._id,
+  };
+  const getData = async () => {
+    if (token) {
+      const response = await fetch(`${baseUrl}/api/all-url`, {
+        method: "POST",
+        headers: {
+          authorization: token?.token || "",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      const data = await response.json();
+      console.log(data);
+    } else {
+      console.log("No token found");
+    }
+  };
+
+  useEffect(() => {
+    getData();
+  }, []);
+
   return (
     <div className="py-5">
       <div
@@ -53,8 +88,10 @@ const Dashboard: React.FC = () => {
                 654
               </span>
             </div>
-            <span className="opacity-10 italic mx-2">|</span>
-            <span className="opacity-65">5 min ago</span>
+            <span className="opacity-10 mx-2">|</span>
+            <span className="opacity-65" style={{ fontSize: "14px" }}>
+              5 min ago
+            </span>
             <FaRegCopy className="text-lg mx-2 text-blue-500 cursor-pointer" />
             <RiDeleteBin6Line className="text-lg text-red-600 cursor-pointer" />
           </CardFooter>

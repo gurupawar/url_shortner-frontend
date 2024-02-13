@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/header";
-
-const inter = Inter({ subsets: ["latin"] });
+import { MyContextProvider } from "../context/MyContext";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -17,10 +16,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className={(inter.className, "bg-cyan-950")}>
-        <Header />
-        {children}
-      </body>
+      <MyContextProvider>
+        <body className={"bg-cyan-950"}>
+          <Header />
+          {children}
+        </body>
+      </MyContextProvider>
     </html>
   );
 }

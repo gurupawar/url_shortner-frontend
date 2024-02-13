@@ -1,8 +1,14 @@
 "use client";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import React, { useEffect } from "react";
 
 const Header: React.FC = () => {
-  const [isLoggedIn, setIsLoggedIn] = React.useState<boolean>(false);
+  const [isLoggedIn, setIsLoggedIn] = React.useState<boolean>(
+    localStorage.getItem("user") ? true : false
+  );
+
+  const pathname = usePathname();
 
   useEffect(() => {
     const userString = localStorage.getItem("user");
@@ -13,11 +19,10 @@ const Header: React.FC = () => {
         setIsLoggedIn(true);
       }
     } else {
-      console.log("User data not found in local storage");
+      console.log("User is not logged in");
     }
-  }, [isLoggedIn]);
+  }, [pathname]);
 
-  console.log(isLoggedIn);
   return (
     <header className="bg-cyan-950">
       <div className="container flex justify-between items-center text-slate-300  py-5">
@@ -27,21 +32,21 @@ const Header: React.FC = () => {
         <nav>
           <ul className="flex space-x-4">
             <li>
-              <a href="/">Home</a>
+              <Link href="/">Home</Link>
             </li>
             {isLoggedIn ? (
               <>
                 <li>
-                  <a href="/dashboard">Dashboard</a>
+                  <Link href="/dashboard">Dashboard</Link>
                 </li>
               </>
             ) : (
               <>
                 <li>
-                  <a href="/signup">Sign up</a>
+                  <Link href="/signup">Sign up</Link>
                 </li>
                 <li>
-                  <a href="/signin">Log in</a>
+                  <Link href="/signin">Log in</Link>
                 </li>
               </>
             )}

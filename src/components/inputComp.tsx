@@ -1,48 +1,159 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { Button } from "./ui/button";
 import { Checkbox } from "./ui/checkbox";
 import { Calendar } from "./ui/calendar";
 import { CalendarIcon } from "@radix-ui/react-icons";
 import { format } from "date-fns";
+import { MdContentCopy } from "react-icons/md";
+import { Toaster, toast } from "sonner";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import Loader from "./ui/loader";
+import { useMyContext } from "@/context/MyContext";
 
 const InputComp: React.FC = () => {
   const [show, setShow] = React.useState<boolean>(false);
   const [date, setDate] = React.useState<Date>();
   const [originalUrl, setOriginalUrl] = React.useState<string>("");
-  const [shortenedUrl, setShortenedUrl] = React.useState<string>("");
   const [keyword, setKeyword] = React.useState<string>("");
-  const today = new Date();
+  const [loader, setLoader] = React.useState<boolean>(false);
+  const [error, setError] = React.useState<string>("");
+  const { setShortenedUrl, shortenedUrl, setToken, token } = useMyContext();
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
-  const handleSubmit = (e: { preventDefault: () => void }) => {
-    e.preventDefault();
-    console.log("Submitted");
-    console.log(originalUrl, keyword, date);
+  useEffect(() => {
+    const userString = localStorage.getItem("user");
+    if (userString) {
+      const user = JSON.parse(userString);
+
+      if (user) {
+        setToken(user);
+      }
+    } else {
+      console.log("User data not found in local storage");
+    }
+  }, []);
+
+  type RequestBody = {
+    originalUrl: string;
+    user: {
+      _id: string | undefined;
+    };
+    customKeyword?: string;
+    expirationDate?: string;
   };
+
+  const handleSubmit = async (e: { preventDefault: () => void }) => {
+    e.preventDefault();
+    setLoader(true);
+
+    const dateObject = date ? new Date(date) : undefined;
+    const formattedDate = dateObject?.toLocaleDateString("en-US", {
+      month: "short",
+      day: "2-digit",
+      year: "numeric",
+    });
+
+    try {
+      const requestBody: RequestBody = {
+        originalUrl,
+        user: {
+          _id: token?._id,
+        },
+      };
+
+      if (keyword) {
+        requestBody.customKeyword = keyword;
+      }
+      if (formattedDate) {
+        requestBody.expirationDate = formattedDate;
+      }
+
+      const response = await fetch(`${baseUrl}/api/shorten/new`, {
+        method: "POST",
+        headers: {
+          authorization: token?.token || "",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      // Access the response body
+      const responseData = await response.json();
+
+      if (responseData.status === 201) {
+        console.log(responseData);
+        setShortenedUrl(responseData.newUrl.shortUrl);
+        setOriginalUrl("");
+        setKeyword("");
+        setDate(undefined);
+        setLoader(false);
+      } else if (responseData.status === 400) {
+        setError(responseData.message);
+        setLoader(false);
+        console.log(responseData.error);
+      }
+    } catch (error) {
+      setLoader(false);
+      console.error("Error posting data:", error);
+    }
+  };
+
+  const handleCopy = () => {
+    if (shortenedUrl) {
+      navigator.clipboard
+        .writeText(shortenedUrl)
+        .then(() => {
+          toast.success("URL copied to clipboard");
+        })
+        .catch((error) => {
+          console.error("Error copying URL to clipboard: ", error);
+        });
+    }
+  };
+
   return (
     <div className="w-full mt-10">
       <span className="text-sm">Your long Url</span>
-      <div className="flex items-center mt-1">
-        <input
-          value={originalUrl}
-          onChange={(e) => setOriginalUrl(e.target.value)}
-          className="block bg-gray-100 bg-opacity-30 border rounded-sm px-3 border-gray-500 w-full text-white text-opacity-100 py-2 focus:outline-none"
-          type="text"
-          placeholder="https://wwww.example.com/this-is-a-very-long-url-that-needs-to-be-shortened"
-        />
+      <div className="flex items-start mt-1">
+        <div className="w-full">
+          <input
+            value={originalUrl}
+            onChange={(e) => setOriginalUrl(e.target.value)}
+            className=" bg-gray-100 bg-opacity-30 border rounded-sm px-3 border-gray-500 block  w-full text-white text-opacity-100 py-2 focus:outline-none"
+            type="text"
+            placeholder="https://wwww.example.com/this-is-a-very-long-url-that-needs-to-be-shortened"
+          />
+          {error && <span className="text-red-500 text-sm">{error}</span>}
+          {shortenedUrl && (
+            <div className="flex items-center mt-2">
+              <a
+                href={`${baseUrl}${shortenedUrl}`}
+                target="_blank"
+                className="text-green-500 text-sm font-semibold"
+              >{`${baseUrl}${shortenedUrl}`}</a>
+              <MdContentCopy
+                className="ms-2 cursor-pointer"
+                onClick={handleCopy}
+              />
+              <Toaster richColors theme="dark" position="top-right" />
+            </div>
+          )}
+        </div>
         <Button
+          disabled={!originalUrl}
           onClick={handleSubmit}
+          style={{ minWidth: "82.3px" }}
           className="bg-orange-500 text-white rounded-sm py-5 ml-2 hover:bg-orange-400"
         >
-          Shorten URL
+          {loader ? <Loader /> : "Shorten"}
         </Button>
       </div>
-      <div className="flex items-center justify-center mt-5">
+      <div className="flex items-center justify-center mt-8">
         <Checkbox id="customProperties" onClick={() => setShow(!show)} />
         <label
           htmlFor="customProperties"
@@ -81,7 +192,7 @@ const InputComp: React.FC = () => {
                   mode="single"
                   selected={date}
                   disabled={(date) =>
-                    date < new Date(new Date().setHours(0, 0, 0, 0))
+                    date <= new Date(new Date().setHours(0, 0, 0, 0))
                   }
                   onSelect={setDate}
                   initialFocus
