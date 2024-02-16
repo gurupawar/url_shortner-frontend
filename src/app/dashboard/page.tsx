@@ -28,7 +28,7 @@ const Dashboard: React.FC = () => {
   };
   const getData = async () => {
     if (token) {
-      const response = await fetch(`${baseUrl}/api/all-url`, {
+      const response = await fetch(`https://short-me.onrender.com/api/all-url`, {
         method: "POST",
         headers: {
           authorization: token?.token || "",
