@@ -14,6 +14,8 @@ interface MyContextType {
   setShortenedUrl: (newValue: string) => void;
   setToken: (newValue: Token) => void;
   localValueSetter: (data: any) => void;
+  isCreated: boolean;
+  setIsCreated: (newValue: boolean) => void;
 }
 
 const MyContext = createContext<MyContextType | undefined>(undefined);
@@ -32,6 +34,7 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({
   // const [value, setValue] = useState<string>("");
   const [shortenedUrl, setShortenedUrl] = React.useState<string>("");
   const [token, setToken] = React.useState<Token | null>(null);
+  const [isCreated, setIsCreated] = React.useState<boolean>(false);
 
   const localValueSetter = (data: any) => {
     localStorage.setItem("user", JSON.stringify(data));
@@ -45,6 +48,8 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({
         setShortenedUrl,
         setToken,
         token,
+        isCreated,
+        setIsCreated,
       }}
     >
       {children}

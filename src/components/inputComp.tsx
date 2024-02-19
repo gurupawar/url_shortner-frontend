@@ -22,7 +22,14 @@ const InputComp: React.FC = () => {
   const [keyword, setKeyword] = React.useState<string>("");
   const [loader, setLoader] = React.useState<boolean>(false);
   const [error, setError] = React.useState<string>("");
-  const { setShortenedUrl, shortenedUrl, setToken, token } = useMyContext();
+  const {
+    setShortenedUrl,
+    shortenedUrl,
+    setToken,
+    token,
+    setIsCreated,
+    isCreated,
+  } = useMyContext();
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
   useEffect(() => {
@@ -73,25 +80,29 @@ const InputComp: React.FC = () => {
         requestBody.expirationDate = formattedDate;
       }
 
-      const response = await fetch(`${baseUrl}/api/shorten/new`, {
-        method: "POST",
-        headers: {
-          authorization: token?.token || "",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestBody),
-      });
+      const response = await fetch(
+        `https://short-me.onrender.com/api/shorten/new`,
+        {
+          method: "POST",
+          headers: {
+            authorization: token?.token || "",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestBody),
+        }
+      );
 
       // Access the response body
       const responseData = await response.json();
 
       if (responseData.status === 201) {
-        console.log(responseData);
         setShortenedUrl(responseData.newUrl.shortUrl);
+        setIsCreated(!isCreated);
         setOriginalUrl("");
         setKeyword("");
         setDate(undefined);
         setLoader(false);
+        setError("");
       } else if (responseData.status === 400) {
         setError(responseData.message);
         setLoader(false);
@@ -132,15 +143,15 @@ const InputComp: React.FC = () => {
           {shortenedUrl && (
             <div className="flex items-center mt-2">
               <a
-                href={`${baseUrl}${shortenedUrl}`}
+                href={`https://short-me.onrender.com/${shortenedUrl}`}
                 target="_blank"
                 className="text-green-500 text-sm font-semibold"
-              >{`${baseUrl}${shortenedUrl}`}</a>
+              >{`https://short-me.onrender.com/${shortenedUrl}`}</a>
               <MdContentCopy
                 className="ms-2 cursor-pointer"
                 onClick={handleCopy}
               />
-              <Toaster richColors theme="dark" position="top-right" />
+              <Toaster richColors theme="light" position="top-right" />
             </div>
           )}
         </div>
@@ -163,7 +174,7 @@ const InputComp: React.FC = () => {
         </label>
       </div>
       {show && (
-        <div className="flex items-end  mt-4">
+        <div className="flex items-end flex-col md:flex-row  mt-4">
           <div className="w-full">
             <span className="text-sm">Custom Keyword</span>
             <input
@@ -175,7 +186,10 @@ const InputComp: React.FC = () => {
               placeholder="portfolio"
             />
           </div>
-          <div className="ms-2 flex flex-col w-full" style={{ height: "100%" }}>
+          <div
+            className="ms-2 mt-3 md:mt-0 flex flex-col w-full"
+            style={{ height: "100%" }}
+          >
             <span className="text-sm mb-2">Expiration Date</span>
             <Popover>
               <PopoverTrigger asChild>

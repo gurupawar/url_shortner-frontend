@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/header";
 import { MyContextProvider } from "../context/MyContext";
+import Footer from "@/components/footer";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -19,7 +20,8 @@ export default function RootLayout({
       <MyContextProvider>
         <body className={"bg-cyan-950"}>
           <Header />
-          {children}
+          <div style={{ minHeight: "calc(100vh - 112px)" }}>{children}</div>
+          <Footer />
         </body>
       </MyContextProvider>
     </html>
