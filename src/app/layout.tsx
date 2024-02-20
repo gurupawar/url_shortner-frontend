@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "@/components/header";
 import { MyContextProvider } from "../context/MyContext";
 import Footer from "@/components/footer";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -21,6 +22,7 @@ export default function RootLayout({
         <body className={"bg-cyan-950"}>
           <Header />
           <div style={{ minHeight: "calc(100vh - 112px)" }}>{children}</div>
+          <Toaster richColors theme="light" position="top-right" />
           <Footer />
         </body>
       </MyContextProvider>

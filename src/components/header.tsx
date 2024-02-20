@@ -1,14 +1,24 @@
 "use client";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React, { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 const Header: React.FC = () => {
+  const router = useRouter();
   const [isLoggedIn, setIsLoggedIn] = React.useState<boolean>(
-    localStorage.getItem("user") ? true : false
+    typeof window !== "undefined" && localStorage.getItem("user") ? true : false
   );
 
   const pathname = usePathname();
+
+  const handleLogOut = () => {
+    localStorage.removeItem("user");
+    setIsLoggedIn(false);
+    router.push("/");
+    toast.success("Logged out successfully.");
+  };
 
   useEffect(() => {
     const userString = localStorage.getItem("user");
@@ -22,6 +32,14 @@ const Header: React.FC = () => {
       console.log("User is not logged in");
     }
   }, [pathname]);
+  const [hydration, setHydration] = useState(true);
+
+  useEffect(() => {
+    setHydration(false);
+  }, [isLoggedIn]);
+  if (hydration) {
+    return;
+  }
 
   return (
     <header className="bg-cyan-950">
@@ -38,6 +56,11 @@ const Header: React.FC = () => {
               <>
                 <li>
                   <Link href="/dashboard">Dashboard</Link>
+                </li>
+                <li>
+                  <span onClick={handleLogOut} className="cursor-pointer">
+                    Log out
+                  </span>
                 </li>
               </>
             ) : (

@@ -1,19 +1,17 @@
 "use client";
-
 import React, { createContext, useContext, useState } from "react";
 
-type Token = {
+interface Token {
   _id: string;
   email: string;
-  token: string;
-};
+}
 
 interface MyContextType {
-  shortenedUrl: string;
-  token: Token | null;
-  setShortenedUrl: (newValue: string) => void;
-  setToken: (newValue: Token) => void;
-  localValueSetter: (data: any) => void;
+  url: string;
+
+  setUrl: (newUrl: string) => void;
+
+  localValueSetter: (data: Token | null) => void;
   isCreated: boolean;
   setIsCreated: (newValue: boolean) => void;
 }
@@ -31,12 +29,11 @@ export const useMyContext = () => {
 export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  // const [value, setValue] = useState<string>("");
-  const [shortenedUrl, setShortenedUrl] = React.useState<string>("");
-  const [token, setToken] = React.useState<Token | null>(null);
-  const [isCreated, setIsCreated] = React.useState<boolean>(false);
+  const [url, setUrl] = useState<string>("");
+  const [token, setToken] = useState<Token | null>(null);
+  const [isCreated, setIsCreated] = useState<boolean>(false);
 
-  const localValueSetter = (data: any) => {
+  const localValueSetter = (data: Token | null) => {
     localStorage.setItem("user", JSON.stringify(data));
   };
 
@@ -44,10 +41,8 @@ export const MyContextProvider: React.FC<{ children: React.ReactNode }> = ({
     <MyContext.Provider
       value={{
         localValueSetter,
-        shortenedUrl,
-        setShortenedUrl,
-        setToken,
-        token,
+        url,
+        setUrl,
         isCreated,
         setIsCreated,
       }}

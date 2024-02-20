@@ -5,7 +5,6 @@ import {
   CardContent,
   CardFooter,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import Loader from "@/components/ui/loader";
 import { useMyContext } from "@/context/MyContext";
@@ -15,30 +14,33 @@ import { BsEye } from "react-icons/bs";
 import { FaExternalLinkAlt } from "react-icons/fa";
 import { FaRegCopy } from "react-icons/fa";
 import { RiDeleteBin6Line } from "react-icons/ri";
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 
 type RequestBody = {
   _id: string | undefined;
 };
 
 const Dashboard: React.FC = () => {
-  const { token, isCreated } = useMyContext();
+  const { isCreated } = useMyContext();
   const [urlList, setUrlList] = React.useState<string[]>([]);
   const [loader, setLoader] = React.useState<boolean>(false);
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-
+  const user = localStorage.getItem("user");
+  const { _id: userId, token: userToken } = user
+    ? JSON.parse(user)
+    : { _id: "", token: "" };
   const requestBody: RequestBody = {
-    _id: token?._id,
+    _id: userId,
   };
   const getData = async () => {
     setLoader(true);
-    if (token && token.token) {
+    if (user && userToken) {
       const response = await fetch(
         `https://short-me.onrender.com/api/all-url`,
         {
           method: "POST",
           headers: {
-            authorization: token.token,
+            authorization: userToken,
             "Content-Type": "application/json",
           },
           body: JSON.stringify(requestBody),
@@ -57,7 +59,7 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     getData();
-  }, [token, isCreated]);
+  }, [user, isCreated]);
 
   const handleCopy = (id: string) => {
     const url = urlList.find((url) => (url as { _id?: string })._id === id) as {
@@ -76,8 +78,62 @@ const Dashboard: React.FC = () => {
         });
     }
   };
+  const handleDelete = async (id: string) => {
+    try {
+      const user = localStorage.getItem("user");
+      const { _id: userId, token: userToken } = user
+        ? JSON.parse(user)
+        : { _id: "", token: "" };
 
-  console.log(urlList);
+      const requestBody: RequestBody = {
+        _id: userId,
+      };
+
+      const response = await fetch(`https://short-me.onrender.com/api/${id}`, {
+        method: "DELETE",
+        headers: {
+          authorization: userToken,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      const responseData = await response.json();
+
+      if (responseData.status === 200) {
+        toast.success("URL deleted successfully");
+        getData();
+      } else if (responseData.status === 400 || responseData.status === 403) {
+        toast.error(responseData.message);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  function formatTimeAgo(timestamp: string): string {
+    const currentDate: Date = new Date();
+    const previousDate: Date = new Date(timestamp);
+
+    const timeDifference: number =
+      currentDate.getTime() - previousDate.getTime();
+    const secondsDifference: number = Math.floor(timeDifference / 1000);
+    const minutesDifference: number = Math.floor(secondsDifference / 60);
+    const hoursDifference: number = Math.floor(minutesDifference / 60);
+    const daysDifference: number = Math.floor(hoursDifference / 24);
+
+    if (daysDifference > 0) {
+      return daysDifference === 1 ? "1 day ago" : `${daysDifference} days ago`;
+    } else if (hoursDifference > 0) {
+      return hoursDifference === 1 ? "1 hr ago" : `${hoursDifference} hr ago`;
+    } else if (minutesDifference > 0) {
+      return minutesDifference === 1
+        ? "1 min ago"
+        : `${minutesDifference} min ago`;
+    } else {
+      return "just now";
+    }
+  }
   return (
     <div className="py-5">
       <div
@@ -146,7 +202,9 @@ const Dashboard: React.FC = () => {
                 </div>
                 <span className="opacity-10 mx-2">|</span>
                 <span className="opacity-65" style={{ fontSize: "14px" }}>
-                  5 min ago
+                  {formatTimeAgo(
+                    (url as { createdAt?: string }).createdAt || ""
+                  )}
                 </span>
                 <FaRegCopy
                   onClick={() =>
@@ -154,12 +212,16 @@ const Dashboard: React.FC = () => {
                   }
                   className="text-lg mx-2 text-blue-500 cursor-pointer"
                 />
-                <RiDeleteBin6Line className="text-lg text-red-600 cursor-pointer" />
+                <RiDeleteBin6Line
+                  onClick={() =>
+                    handleDelete((url as { _id?: string })?._id || "")
+                  }
+                  className="text-lg text-red-600 cursor-pointer"
+                />
               </CardFooter>
             </Card>
           ))}
         </div>
-        <Toaster richColors theme="light" position="top-right" />
       </div>
     </div>
   );

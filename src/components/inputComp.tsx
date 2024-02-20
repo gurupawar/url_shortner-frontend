@@ -22,28 +22,24 @@ const InputComp: React.FC = () => {
   const [keyword, setKeyword] = React.useState<string>("");
   const [loader, setLoader] = React.useState<boolean>(false);
   const [error, setError] = React.useState<string>("");
-  const {
-    setShortenedUrl,
-    shortenedUrl,
-    setToken,
-    token,
-    setIsCreated,
-    isCreated,
-  } = useMyContext();
+  const { url, setUrl, setIsCreated, isCreated } = useMyContext();
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
-  useEffect(() => {
-    const userString = localStorage.getItem("user");
-    if (userString) {
-      const user = JSON.parse(userString);
+  // useEffect(() => {
+  //   const userString = localStorage.getItem("user");
 
-      if (user) {
-        setToken(user);
-      }
-    } else {
-      console.log("User data not found in local storage");
-    }
-  }, []);
+  //   console.log("userString", userString);
+  //   if (userString) {
+  //     const user = JSON.parse(userString);
+
+  //     if (user) {
+  //       console.log("user,", user);
+  //       setToken(user);
+  //     }
+  //   } else {
+  //     console.log("User data not found in local storage");
+  //   }
+  // }, []);
 
   type RequestBody = {
     originalUrl: string;
@@ -66,10 +62,14 @@ const InputComp: React.FC = () => {
     });
 
     try {
+      const user = localStorage.getItem("user");
+      const { _id: userId } = user ? JSON.parse(user) : { _id: "" };
+      const { token: userToken } = user ? JSON.parse(user) : { token: "" };
+
       const requestBody: RequestBody = {
         originalUrl,
         user: {
-          _id: token?._id,
+          _id: userId,
         },
       };
 
@@ -85,7 +85,7 @@ const InputComp: React.FC = () => {
         {
           method: "POST",
           headers: {
-            authorization: token?.token || "",
+            authorization: userToken,
             "Content-Type": "application/json",
           },
           body: JSON.stringify(requestBody),
@@ -96,7 +96,7 @@ const InputComp: React.FC = () => {
       const responseData = await response.json();
 
       if (responseData.status === 201) {
-        setShortenedUrl(responseData.newUrl.shortUrl);
+        setUrl(responseData.newUrl.shortUrl);
         setIsCreated(!isCreated);
         setOriginalUrl("");
         setKeyword("");
@@ -115,9 +115,9 @@ const InputComp: React.FC = () => {
   };
 
   const handleCopy = () => {
-    if (shortenedUrl) {
+    if (url) {
       navigator.clipboard
-        .writeText(shortenedUrl)
+        .writeText(url)
         .then(() => {
           toast.success("URL copied to clipboard");
         })
@@ -140,18 +140,17 @@ const InputComp: React.FC = () => {
             placeholder="https://wwww.example.com/this-is-a-very-long-url-that-needs-to-be-shortened"
           />
           {error && <span className="text-red-500 text-sm">{error}</span>}
-          {shortenedUrl && (
+          {url && (
             <div className="flex items-center mt-2">
               <a
-                href={`https://short-me.onrender.com/${shortenedUrl}`}
+                href={`https://short-me.onrender.com/${url}`}
                 target="_blank"
                 className="text-green-500 text-sm font-semibold"
-              >{`https://short-me.onrender.com/${shortenedUrl}`}</a>
+              >{`https://short-me.onrender.com/${url}`}</a>
               <MdContentCopy
                 className="ms-2 cursor-pointer"
                 onClick={handleCopy}
               />
-              <Toaster richColors theme="light" position="top-right" />
             </div>
           )}
         </div>

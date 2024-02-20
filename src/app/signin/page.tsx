@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { useMyContext } from "../../context/MyContext";
+import Loader from "@/components/ui/loader";
 
 const SignIn: React.FC = () => {
   const router = useRouter();
@@ -83,9 +84,9 @@ const SignIn: React.FC = () => {
         <Button
           type="submit"
           disabled={!email || !password}
-          className="block w-full my-5 rounded-sm text-white bg-blue-500 hover:bg-blue-600"
+          className=" w-full my-5 rounded-sm text-white bg-blue-500 hover:bg-blue-600 flex justify-center"
         >
-          {loading ? "Loading..." : "Login"}
+          {loading ? <Loader /> : "Login"}
         </Button>
 
         <p className="text-sm text-center">

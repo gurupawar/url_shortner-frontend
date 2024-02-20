@@ -1,15 +1,23 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import React from "react";
+import { useMyContext } from "@/context/MyContext";
+import { useRouter } from "next/navigation";
+import Loader from "@/components/ui/loader";
 
 const SignUp: React.FC = () => {
   const [email, setEmail] = React.useState<string>("");
   const [password, setPassword] = React.useState<string>("");
   const [confirmPassword, setconfirmPassword] = React.useState<string>("");
   const [error, setError] = React.useState<string>("");
+  const { localValueSetter } = useMyContext();
+  const [loading, setLoading] = React.useState<boolean>(false);
+  const router = useRouter();
 
   const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
+    setLoading(true);
 
     // Regular expression for email validation
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -24,10 +32,10 @@ const SignUp: React.FC = () => {
         setError("Password should be at least 6 characters long");
         return;
       }
-      console.log("hello");
+
       try {
         const response = await fetch(
-          "https://short-me.onrender.com/auth/signin",
+          "https://short-me.onrender.com/auth/signup",
           {
             method: "POST",
             headers: {
@@ -39,16 +47,14 @@ const SignUp: React.FC = () => {
 
         // Access the response body
         const responseData = await response.json();
-        console.log(responseData);
 
-        if (!responseData.user) {
-          console.log(responseData.message);
-          setError(responseData.error);
-        } else if (responseData.user) {
-          console.log(responseData);
-          // localValueSetter(responseData.user);
-          // localStorage.setItem("user", JSON.stringify(responseData.user));
-          // router.push("/dashboard");
+        if (responseData.status === 400) {
+          setLoading(false);
+          setError(responseData.message);
+        } else if (responseData) {
+          localValueSetter(responseData.user);
+          setLoading(false);
+          router.push("/dashboard");
         }
       } catch (error) {
         console.error("Error posting data:", error);
@@ -105,20 +111,20 @@ const SignUp: React.FC = () => {
           disabled={!email || !password || !confirmPassword}
           className="block w-full my-5 rounded-sm text-white bg-blue-500 hover:bg-blue-600"
         >
-          Sign In
+          {loading ? <Loader /> : "  Sign In"}
         </Button>
 
-        <p className="text-sm text-center flex justify-between">
+        <div className="text-sm text-center flex justify-between">
           <div>
             <span className="op"> Already have acc? </span>
-            <a href="/signin" className="text-blue-500 font-semibold">
+            <Link href="/signin" className="text-blue-500 font-semibold">
               Log In
-            </a>
+            </Link>
           </div>
           <span className="text-sm font-semibold text-blue-500 text-right ">
             Forgot password?
           </span>
-        </p>
+        </div>
       </form>
     </div>
   );
