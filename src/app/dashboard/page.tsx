@@ -145,10 +145,11 @@ const Dashboard: React.FC = () => {
   const expiryChecker = (url: string) => {
     const expiryDate =
       (url as { expirationDate?: string })?.expirationDate ?? null;
+    const currentDate = new Date();
     const validatedDate = expiryDate
-      ? new Date(expiryDate) < new Date()
+      ? new Date(expiryDate) < currentDate
         ? " expired"
-        : ""
+        : null
       : null;
     return validatedDate;
   };
