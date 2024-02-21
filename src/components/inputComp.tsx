@@ -106,7 +106,6 @@ const InputComp: React.FC = () => {
       } else if (responseData.status === 400) {
         setError(responseData.message);
         setLoader(false);
-        console.log(responseData.error);
       }
     } catch (error) {
       setLoader(false);
@@ -117,7 +116,7 @@ const InputComp: React.FC = () => {
   const handleCopy = () => {
     if (url) {
       navigator.clipboard
-        .writeText(url)
+        .writeText(`https://short-me.onrender.com/${url}`)
         .then(() => {
           toast.success("URL copied to clipboard");
         })

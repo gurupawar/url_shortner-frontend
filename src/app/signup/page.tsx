@@ -5,6 +5,7 @@ import React from "react";
 import { useMyContext } from "@/context/MyContext";
 import { useRouter } from "next/navigation";
 import Loader from "@/components/ui/loader";
+import { toast } from "sonner";
 
 const SignUp: React.FC = () => {
   const [email, setEmail] = React.useState<string>("");
@@ -26,10 +27,12 @@ const SignUp: React.FC = () => {
       setError("Invalid email address");
     } else if (password !== confirmPassword) {
       setError("Confirm password does not match!");
+      setLoading(false);
     } else {
       setError("");
       if (password.length < 6) {
         setError("Password should be at least 6 characters long");
+        setLoading(false);
         return;
       }
 
@@ -51,10 +54,11 @@ const SignUp: React.FC = () => {
         if (responseData.status === 400) {
           setLoading(false);
           setError(responseData.message);
-        } else if (responseData) {
-          localValueSetter(responseData.user);
+        } else if (responseData.status === 201) {
+          localValueSetter({ token: responseData.token });
           setLoading(false);
           router.push("/dashboard");
+          toast.success(responseData.message);
         }
       } catch (error) {
         console.error("Error posting data:", error);
@@ -109,7 +113,7 @@ const SignUp: React.FC = () => {
         <Button
           type="submit"
           disabled={!email || !password || !confirmPassword}
-          className="block w-full my-5 rounded-sm text-white bg-blue-500 hover:bg-blue-600"
+          className="flex justify-center w-full my-5 rounded-sm text-white bg-blue-500 hover:bg-blue-600"
         >
           {loading ? <Loader /> : "  Sign In"}
         </Button>

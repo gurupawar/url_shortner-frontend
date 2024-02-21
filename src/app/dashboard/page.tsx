@@ -23,37 +23,43 @@ type RequestBody = {
 const Dashboard: React.FC = () => {
   const { isCreated } = useMyContext();
   const [urlList, setUrlList] = React.useState<string[]>([]);
-  const [loader, setLoader] = React.useState<boolean>(false);
+  const [loader, setLoader] = React.useState<boolean>(true);
+  const [token, setToken] = React.useState<string | null>(null);
+  const [user, setUser] = React.useState<string | null>(null);
+
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-  const user = localStorage.getItem("user");
-  const { _id: userId, token: userToken } = user
-    ? JSON.parse(user)
-    : { _id: "", token: "" };
-  const requestBody: RequestBody = {
-    _id: userId,
-  };
+
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+    const token = user ? JSON.parse(user) : null;
+    setUser(user);
+    setToken(token?.token);
+  }, []);
+
   const getData = async () => {
     setLoader(true);
-    if (user && userToken) {
+    if (token) {
       const response = await fetch(
         `https://short-me.onrender.com/api/all-url`,
         {
           method: "POST",
           headers: {
-            authorization: userToken,
+            authorization: token,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(requestBody),
         }
       );
 
       const data = await response.json();
+
       setLoader(false);
       if (data.urls) {
         setUrlList(data.urls);
       }
     } else {
-      console.log("No token found");
+      setTimeout(() => {
+        setLoader(false);
+      }, 2000);
     }
   };
 
@@ -69,7 +75,7 @@ const Dashboard: React.FC = () => {
 
     if (url && url.shortUrl) {
       navigator.clipboard
-        .writeText(url.shortUrl)
+        .writeText(`https://short-me.onrender.com/${url.shortUrl}`)
         .then(() => {
           toast.success("URL copied to clipboard");
         })

@@ -30,13 +30,11 @@ const SignIn: React.FC = () => {
       // Access the response body
       const responseData = await response.json();
 
-      if (!responseData.user) {
-        console.log(responseData.message);
+      if (responseData.status === 401) {
         setError(responseData.message);
         setLoading(false);
-      } else if (responseData.user) {
-        localValueSetter(responseData.user);
-        localStorage.setItem("user", JSON.stringify(responseData.user));
+      } else if (responseData.status === 200) {
+        localValueSetter({ token: responseData.token });
         router.push("/dashboard");
       }
     } catch (error) {

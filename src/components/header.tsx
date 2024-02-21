@@ -22,6 +22,7 @@ const Header: React.FC = () => {
 
   useEffect(() => {
     const userString = localStorage.getItem("user");
+
     if (userString) {
       const user = JSON.parse(userString);
 

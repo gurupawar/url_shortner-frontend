@@ -2,8 +2,7 @@
 import React, { createContext, useContext, useState } from "react";
 
 interface Token {
-  _id: string;
-  email: string;
+  token: string;
 }
 
 interface MyContextType {
