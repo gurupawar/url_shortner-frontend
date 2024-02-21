@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/card";
 import Loader from "@/components/ui/loader";
 import { useMyContext } from "@/context/MyContext";
+import { url } from "inspector";
 import Link from "next/link";
 import React, { useEffect } from "react";
 import { BsEye } from "react-icons/bs";
@@ -140,8 +141,21 @@ const Dashboard: React.FC = () => {
       return "just now";
     }
   }
+
+  const expiryChecker = (url: string) => {
+    const expiryDate =
+      (url as { expirationDate?: string })?.expirationDate ?? null;
+    const validatedDate = expiryDate
+      ? new Date(expiryDate) < new Date()
+        ? " expired"
+        : ""
+      : null;
+    return validatedDate;
+  };
+
+  console.log(urlList);
   return (
-    <div className="py-5">
+    <div className="py-5" style={{ minHeight: "calc(100vh - 112px)" }}>
       <div
         style={{ maxWidth: "700px" }}
         className="container mx-auto flex min-h-60  flex-col justify-center items-center"
@@ -212,6 +226,13 @@ const Dashboard: React.FC = () => {
                     (url as { createdAt?: string }).createdAt || ""
                   )}
                 </span>
+                <span
+                  style={{ fontSize: "12px" }}
+                  className="text-red-400 font-normal "
+                >
+                  {expiryChecker(url) !== null ? `- Expired` : ""}
+                </span>
+                <span className="opacity-10 mx-2">|</span>
                 <FaRegCopy
                   onClick={() =>
                     handleCopy((url as { _id?: string })?._id || "")
@@ -222,7 +243,7 @@ const Dashboard: React.FC = () => {
                   onClick={() =>
                     handleDelete((url as { _id?: string })?._id || "")
                   }
-                  className="text-lg text-red-600 cursor-pointer"
+                  className="text-lg text-red-500 cursor-pointer"
                 />
               </CardFooter>
             </Card>

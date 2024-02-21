@@ -21,7 +21,7 @@ export default function RootLayout({
       <MyContextProvider>
         <body className={"bg-cyan-950"}>
           <Header />
-          <div style={{ minHeight: "calc(100vh - 112px)" }}>{children}</div>
+          {children}
           <Toaster richColors theme="light" position="top-right" />
           <Footer />
         </body>

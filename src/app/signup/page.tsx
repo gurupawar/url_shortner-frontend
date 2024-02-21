@@ -67,7 +67,10 @@ const SignUp: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto py-5 max-w-lg">
+    <div
+      className="container mx-auto py-5 max-w-lg"
+      style={{ minHeight: "calc(100vh - 112px)" }}
+    >
       <h1 className="text-left text-3xl font-bold text-orange-500">
         Join ShortME, <span className="text-blue-500">Save Time</span> Today
       </h1>

@@ -136,7 +136,7 @@ const InputComp: React.FC = () => {
             onChange={(e) => setOriginalUrl(e.target.value)}
             className=" bg-gray-100 bg-opacity-30 border rounded-sm px-3 border-gray-500 block  w-full text-white text-opacity-100 py-2 focus:outline-none"
             type="text"
-            placeholder="https://wwww.example.com/this-is-a-very-long-url-that-needs-to-be-shortened"
+            placeholder="https://example.com/this-is-a-very-long-url-that-needs-to-be-shortened"
           />
           {error && <span className="text-red-500 text-sm">{error}</span>}
           {url && (

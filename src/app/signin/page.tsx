@@ -43,7 +43,10 @@ const SignIn: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto py-5 max-w-lg">
+    <div
+      className="container mx-auto py-5 max-w-lg"
+      style={{ minHeight: "calc(100vh - 112px)" }}
+    >
       <h1 className="text-center text-4xl font-bold text-orange-500">
         Get <span className="text-blue-500">Started</span> Today
       </h1>

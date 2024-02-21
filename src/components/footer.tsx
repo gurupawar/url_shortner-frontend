@@ -3,7 +3,7 @@ import { SiGithub } from "react-icons/si";
 
 const Footer: React.FC = () => {
   return (
-    <div className="bg-cyan-900 mt-10">
+    <div className="bg-cyan-900">
       <div className="container py-3 flex justify-between">
         <span>
           made with ❤️ by
