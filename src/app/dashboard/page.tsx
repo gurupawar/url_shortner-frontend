@@ -13,9 +13,16 @@ import Link from "next/link";
 import React, { useEffect } from "react";
 import { BsEye } from "react-icons/bs";
 import { FaExternalLinkAlt } from "react-icons/fa";
-import { FaRegCopy } from "react-icons/fa";
-import { RiDeleteBin6Line } from "react-icons/ri";
+import { IoIosInformationCircleOutline } from "react-icons/io";
+
+import { RiDeleteBin6Fill } from "react-icons/ri";
+import { IoIosCopy } from "react-icons/io";
 import { toast } from "sonner";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@radix-ui/react-popover";
 
 type RequestBody = {
   _id: string | undefined;
@@ -55,7 +62,8 @@ const Dashboard: React.FC = () => {
 
       setLoader(false);
       if (data.urls) {
-        setUrlList(data.urls);
+        const revList = data.urls.reverse();
+        setUrlList(revList);
       }
     } else {
       setTimeout(() => {
@@ -154,7 +162,11 @@ const Dashboard: React.FC = () => {
     return validatedDate;
   };
 
-  console.log(urlList);
+  const handleInfo = (url: string) => {
+    console.log("hello");
+    console.log(url);
+  };
+
   return (
     <div className="py-5" style={{ minHeight: "calc(100vh - 112px)" }}>
       <div
@@ -178,7 +190,15 @@ const Dashboard: React.FC = () => {
         </div>
         <div className="flex flex-wrap justify-center gap-6">
           {urlList?.map((url, index) => (
-            <Card key={index} className="w-full" style={{ maxWidth: "300px" }}>
+            <Card
+              key={index}
+              className="w-full relative"
+              style={{ maxWidth: "300px", transition: "all 0.3s ease" }}
+            >
+              <IoIosInformationCircleOutline
+                onClick={() => handleInfo(url as string)}
+                className="absolute top-2 right-2 size-5"
+              />
               <CardHeader>
                 <Link
                   target="_blank"
@@ -198,7 +218,7 @@ const Dashboard: React.FC = () => {
                   href={`https://short-me.onrender.com/${
                     (url as { shortUrl?: string })?.shortUrl || ""
                   }`}
-                  className="flex items-center"
+                  className="flex items-center text-blue-300"
                   style={{ fontSize: "12px" }}
                 >
                   {`https://short-me.onrender.com/${(
@@ -211,7 +231,7 @@ const Dashboard: React.FC = () => {
                   />
                 </Link>
               </CardContent>
-              <CardFooter className=" flex items-center justify-between">
+              <CardFooter className="flex items-center justify-between">
                 <div className="flex items-center">
                   <BsEye className="text-orange-100 opacity-65" />
                   <span
@@ -221,31 +241,43 @@ const Dashboard: React.FC = () => {
                     {(url as { totalVisit?: number }).totalVisit || 0}
                   </span>
                 </div>
-                <span className="opacity-10 mx-2">|</span>
-                <span className="opacity-65" style={{ fontSize: "14px" }}>
-                  {formatTimeAgo(
-                    (url as { createdAt?: string }).createdAt || ""
-                  )}
-                </span>
-                <span
-                  style={{ fontSize: "12px" }}
-                  className="text-red-400 font-normal "
-                >
-                  {expiryChecker(url) !== null ? `- Expired` : ""}
-                </span>
-                <span className="opacity-10 mx-2">|</span>
-                <FaRegCopy
-                  onClick={() =>
-                    handleCopy((url as { _id?: string })?._id || "")
-                  }
-                  className="text-lg mx-2 text-blue-500 cursor-pointer"
-                />
-                <RiDeleteBin6Line
-                  onClick={() =>
-                    handleDelete((url as { _id?: string })?._id || "")
-                  }
-                  className="text-lg text-red-500 cursor-pointer"
-                />
+                <div className="flex">
+                  <span className="opacity-10 mx-1">|</span>
+                  <div className="mx-2 flex items-center">
+                    <span className="opacity-65" style={{ fontSize: "14px" }}>
+                      {formatTimeAgo(
+                        (url as { createdAt?: string }).createdAt || ""
+                      )}
+                    </span>
+                    <span
+                      style={{ fontSize: "10px" }}
+                      className="text-red-400 font-normal "
+                    >
+                      {expiryChecker(url) !== null ? (
+                        <span className="bg-red-500 text-white rounded-sm px-1 ms-1">
+                          Expired
+                        </span>
+                      ) : (
+                        ""
+                      )}
+                    </span>
+                  </div>
+                  <span className="opacity-10 mx-1">|</span>
+                </div>
+                <div className="flex">
+                  <IoIosCopy
+                    onClick={() =>
+                      handleCopy((url as { _id?: string })?._id || "")
+                    }
+                    className="text-lg text-blue-400 cursor-pointer"
+                  />
+                  <RiDeleteBin6Fill
+                    onClick={() =>
+                      handleDelete((url as { _id?: string })?._id || "")
+                    }
+                    className="text-lg text-red-400 cursor-pointer ms-3"
+                  />
+                </div>
               </CardFooter>
             </Card>
           ))}
