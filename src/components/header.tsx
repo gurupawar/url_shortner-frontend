@@ -1,17 +1,16 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 
 const Header: React.FC = () => {
   const router = useRouter();
-  const [isLoggedIn, setIsLoggedIn] = React.useState<boolean>(
-    typeof window !== "undefined" && localStorage.getItem("user") ? true : false
-  );
-
-  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(() => {
+    const userString = localStorage.getItem("user");
+    return !!userString;
+  });
 
   const handleLogOut = () => {
     localStorage.removeItem("user");
@@ -22,29 +21,12 @@ const Header: React.FC = () => {
 
   useEffect(() => {
     const userString = localStorage.getItem("user");
-
-    if (userString) {
-      const user = JSON.parse(userString);
-
-      if (user) {
-        setIsLoggedIn(true);
-      }
-    } else {
-      console.log("User is not logged in");
-    }
-  }, [pathname]);
-  const [hydration, setHydration] = useState(true);
-
-  useEffect(() => {
-    setHydration(false);
-  }, [isLoggedIn]);
-  if (hydration) {
-    return;
-  }
+    setIsLoggedIn(!!userString);
+  }, [searchParams]);
 
   return (
     <header className="bg-cyan-950">
-      <div className="container flex justify-between items-center text-slate-300  py-5">
+      <div className="container flex justify-between items-center text-slate-300 py-5">
         <div>
           <h1>ShortME</h1>
         </div>

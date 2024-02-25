@@ -8,7 +8,6 @@ import {
 } from "@/components/ui/card";
 import Loader from "@/components/ui/loader";
 import { useMyContext } from "@/context/MyContext";
-import { url } from "inspector";
 import Link from "next/link";
 import React, { useEffect } from "react";
 import { BsEye } from "react-icons/bs";
@@ -18,11 +17,7 @@ import { IoIosInformationCircleOutline } from "react-icons/io";
 import { RiDeleteBin6Fill } from "react-icons/ri";
 import { IoIosCopy } from "react-icons/io";
 import { toast } from "sonner";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@radix-ui/react-popover";
+import { useRouter } from "next/navigation";
 
 type RequestBody = {
   _id: string | undefined;
@@ -162,9 +157,11 @@ const Dashboard: React.FC = () => {
     return validatedDate;
   };
 
+  const router = useRouter();
   const handleInfo = (url: string) => {
-    console.log("hello");
-    console.log(url);
+    const id: string = (url as { _id?: string })?._id || "";
+
+    router.push(`/dashboard/details?id=${id}`);
   };
 
   return (
