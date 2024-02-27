@@ -13,7 +13,7 @@ const Footer: React.FC = () => {
             href="https://github.com/gurupawar"
           >
             {" "}
-            Gurushesh
+            Gurushesh.
           </a>
         </span>
         <a
