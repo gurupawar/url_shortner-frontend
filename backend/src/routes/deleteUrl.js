@@ -3,7 +3,6 @@ const Url = require("../models/url");
 const jwt = require("jsonwebtoken");
 const { authenticateToken } = require("../service/auth");
 const { secret_jwt } = require("../config/config");
-
 const router = express.Router();
 
 router.delete("/:id", authenticateToken, async (req, res) => {
