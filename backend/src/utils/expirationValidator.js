@@ -22,7 +22,7 @@ const checkExpiration = async (req, res, next) => {
     return res.status(403).json({ message: "URL has expired" });
   }
 
-  // URL is valid, proceed to the next middleware/route handler
+  // URL is valid, proceed to the next middleware/route handler..
   next();
 };
 
