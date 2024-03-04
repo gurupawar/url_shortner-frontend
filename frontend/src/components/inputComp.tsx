@@ -25,22 +25,6 @@ const InputComp: React.FC = () => {
   const { url, setUrl, setIsCreated, isCreated } = useMyContext();
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
-  // useEffect(() => {
-  //   const userString = localStorage.getItem("user");
-
-  //   console.log("userString", userString);
-  //   if (userString) {
-  //     const user = JSON.parse(userString);
-
-  //     if (user) {
-  //       console.log("user,", user);
-  //       setToken(user);
-  //     }
-  //   } else {
-  //     console.log("User data not found in local storage");
-  //   }
-  // }, []);
-
   type RequestBody = {
     originalUrl: string;
     user: {
