@@ -7,7 +7,7 @@ export default function Home() {
       style={{ minHeight: "calc(100vh - 112px)" }}
     >
 
-      <Button>Hi...</Button>
+      <Button>Hi</Button>
     </main>
   );
 }
