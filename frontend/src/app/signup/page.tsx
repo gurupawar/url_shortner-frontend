@@ -20,7 +20,7 @@ const SignUp: React.FC = () => {
     e.preventDefault();
     setLoading(true);
 
-    // Regular expression for email validation.
+    // Regular expression for email validation
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (!emailPattern.test(email)) {
