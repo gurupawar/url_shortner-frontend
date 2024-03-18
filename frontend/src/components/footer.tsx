@@ -6,7 +6,7 @@ const Footer: React.FC = () => {
     <div className="bg-cyan-900">
       <div className="container py-3 flex justify-between">
         <span>
-          Made with ❤️ by
+          Made with 🧡 by
           <a
             className="text-cyan-400"
             target="_blank"
