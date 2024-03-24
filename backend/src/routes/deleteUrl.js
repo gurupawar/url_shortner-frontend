@@ -5,7 +5,7 @@ const { authenticateToken } = require("../service/auth");
 const { secret_jwt } = require("../config/config");
 const router = express.Router();
 
-// Delete route 
+// Delete route.
 router.delete("/:id", authenticateToken, async (req, res) => {
   const { id } = req.params;
 
