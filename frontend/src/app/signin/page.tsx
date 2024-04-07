@@ -6,6 +6,8 @@ import React from "react";
 import { useMyContext } from "../../context/MyContext";
 import Loader from "@/components/ui/loader";
 
+
+// Sign In logic
 const SignIn: React.FC = () => {
   const router = useRouter();
   const [email, setEmail] = React.useState<string>("test@test.com");
