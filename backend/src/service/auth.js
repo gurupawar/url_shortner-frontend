@@ -13,7 +13,7 @@ function authenticateToken(req, res, next) {
   try {
     const decoded = jwt.verify(token, secret_jwt);
 
-    // Check if token has expired
+
     if (decoded.exp <= Math.floor(Date.now() / 1000)) {
       return res.status(401).json({
         message: "Token expired",
