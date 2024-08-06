@@ -29,7 +29,6 @@ const SignIn: React.FC = () => {
         body: JSON.stringify({ email, password }),
       });
 
-      // Access the response body
       const responseData = await response.json();
 
       if (responseData.status === 401) {
