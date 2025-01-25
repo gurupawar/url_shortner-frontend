@@ -38,7 +38,7 @@ const SignUp: React.FC = () => {
 
       try {
         const response = await fetch(
-          "https://short-url-api-sigma.vercel.app/auth/signup",
+          "https://url-shortner-api-dun.vercel.app/auth/signup",
           {
             method: "POST",
             headers: {

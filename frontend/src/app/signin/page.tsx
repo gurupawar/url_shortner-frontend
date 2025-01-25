@@ -21,7 +21,7 @@ const SignIn: React.FC = () => {
 
     try {
       const response = await fetch(
-        "https://short-url-api-sigma.vercel.app/auth/login",
+        "https://url-shortner-api-dun.vercel.app/auth/login",
         {
           method: "POST",
           headers: {

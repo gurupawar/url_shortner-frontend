@@ -73,7 +73,7 @@ const Details: React.FC = () => {
     setLoader(true);
     if (token) {
       const response = await fetch(
-        `https://short-url-api-sigma.vercel.app/api/${id}`,
+        `https://url-shortner-api-dun.vercel.app/api/${id}`,
         {
           method: "GET",
           headers: {

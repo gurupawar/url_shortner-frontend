@@ -37,7 +37,7 @@ app.use(
   router.get("/", (req, res) =>
     res.send({
       message: "Welcome to the URL shortener API",
-      API_URL: "https://short-me.onrender.com",
+      API_URL: "https://url-shortner-api-dun.vercel.app",
       documentation: "https://github.com/gurupawar/url_shortner",
       author: "https://github.com/gurupawar",
       frontend: "https://github.com/gurupawar/url_shortner-frontend",
