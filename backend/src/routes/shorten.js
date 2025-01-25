@@ -23,57 +23,65 @@ router.post("/new", authenticateToken, async (req, res) => {
   const token = req.headers["authorization"];
 
   try {
+    // Decode JWT Token
     const decode = jwt.verify(token, secret_jwt);
+    const userdd = await User.findById(decode._id);
 
-    const user = await User.findOne({ _id: decode._id });
-    if (!user) {
+    if (!userdd) {
       return res
         .status(400)
         .json({ message: "You are not logged in", status: 400 });
     }
 
-    // Validate URL
+    // Validate URL format
     if (!isValidUrl(originalUrl)) {
-      return res.status(400).json({
-        message: "Invalid URL. Make sure it includes https:// or http://",
-        status: 400,
-      });
+      const isContained =
+        originalUrl.startsWith("https://") || originalUrl.startsWith("http://");
+      const errorMessage = isContained
+        ? "Invalid URL"
+        : "The URL is invalid as it does not contain https:// or http://";
+      return res.status(400).json({ message: errorMessage, status: 400 });
     }
 
-    // Check if custom keyword already exists
+    // Check if the custom keyword is already in use
     if (customKeyword) {
-      const existingUrl = await Url.findOne({ customKeyword });
-      if (existingUrl) {
+      const existingUrlWithCustomKeyword = await Url.findOne({ customKeyword });
+      if (existingUrlWithCustomKeyword) {
         return res
           .status(400)
           .json({ message: "Custom keyword already in use", status: 400 });
       }
     }
 
-    // Validate expiration date
+    // Validate expiration date if provided
     if (expirationDate && !isValidExpirationDate(expirationDate)) {
       return res
         .status(400)
         .json({ message: "Invalid expiration date", status: 400 });
     }
 
-    // Generate unique shortUrl
-    const shortUUID = new ShortUniqueId({ length: 10 });
-    const shortUrl = customKeyword || shortUUID();
+    // Generate a short ID if no custom keyword is provided
+    const { randomUUID } = new ShortUniqueId({ length: 10 });
+    const shortUrl = customKeyword || randomUUID();
 
-    // Save to database
-    const newUrl = new Url({
+    // Construct new URL object
+    const newUrlData = {
       user: decode._id,
       originalUrl,
       shortUrl,
       expirationDate,
-      customKeyword,
       createdAt: Date.now(),
-    });
+    };
 
+    // ✅ Only set `customKeyword` if provided (prevents null issue)
+    if (customKeyword) {
+      newUrlData.customKeyword = customKeyword;
+    }
+
+    const newUrl = new Url(newUrlData);
     await newUrl.save();
 
-    res.status(201).json({ message: "Success", newUrl, status: 201 });
+    res.status(201).json({ message: "success", newUrl, status: 201 });
   } catch (error) {
     console.error("Error occurred:", error);
     res.status(500).json({ message: "Internal Server Error", status: 500 });

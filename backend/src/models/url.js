@@ -22,6 +22,7 @@ const urlSchema = new mongoose.Schema({
   customKeyword: {
     type: String,
     unique: true,
+    sparse: true, // ✅ Prevents the duplicate null issue
   },
   expirationDate: Date,
   totalVisit: {

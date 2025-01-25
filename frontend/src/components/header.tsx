@@ -33,7 +33,7 @@ const Header: React.FC = () => {
         <nav>
           <ul className="flex space-x-4">
             <li>
-              <Link href="/">Home</Link>
+              <Link href="/dashboard">Home</Link>
             </li>
             {isLoggedIn ? (
               <>
