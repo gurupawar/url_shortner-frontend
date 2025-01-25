@@ -19,92 +19,64 @@ const router = express.Router();
 // }
 
 router.post("/new", authenticateToken, async (req, res) => {
-  const { originalUrl, expirationDate, customKeyword, user } = req.body;
+  const { originalUrl, expirationDate, customKeyword } = req.body;
   const token = req.headers["authorization"];
 
-  const decode = jwt.verify(token, secret_jwt);
-
   try {
-    const userdd = await User.findOne({ _id: decode._id });
+    const decode = jwt.verify(token, secret_jwt);
 
-    if (userdd === null) {
+    const user = await User.findOne({ _id: decode._id });
+    if (!user) {
       return res
         .status(400)
         .json({ message: "You are not logged in", status: 400 });
     }
 
-    // Check if the URL is valid
+    // Validate URL
     if (!isValidUrl(originalUrl)) {
-      let conditionalMessage = "";
-
-      const isContained =
-        originalUrl.startsWith("https://") || originalUrl.startsWith("http://");
-
-      if (isContained !== true)
-        conditionalMessage =
-          "The URL is invalid as it does not contain  https:// or http://";
       return res.status(400).json({
-        message: conditionalMessage || "Invalid URL",
+        message: "Invalid URL. Make sure it includes https:// or http://",
         status: 400,
       });
     }
 
-    try {
-      // const response = await axios.head(originalUrl);
-
-      // // Check if the response status code indicates success (2xx or 3xx)
-      // if (!(response.status >= 200 && response.status < 400)) {
-      //   return res
-      //     .status(400)
-      //     .json({ message: "Invalid or inaccessible URL", status: 400 });
-      // }
-
-      // Check if the custom keyword is already in use
-      if (customKeyword !== undefined && customKeyword !== "") {
-        const existingUrlWithCustomKeyword = await Url.findOne({
-          customKeyword,
-        });
-        if (existingUrlWithCustomKeyword) {
-          return res
-            .status(400)
-            .json({ message: "Custom keyword already in use", status: 400 });
-        }
-      }
-
-      // Validate expiration date if provided
-      if (expirationDate && !isValidExpirationDate(expirationDate)) {
+    // Check if custom keyword already exists
+    if (customKeyword) {
+      const existingUrl = await Url.findOne({ customKeyword });
+      if (existingUrl) {
         return res
           .status(400)
-          .json({ message: "Invalid expiration date", status: 400 });
+          .json({ message: "Custom keyword already in use", status: 400 });
       }
+    }
 
-      // Generate a short ID for the URL if no custom keyword is provided
-      const { randomUUID } = new ShortUniqueId({ length: 10 });
-      const shortUrl = customKeyword || randomUUID();
-
-      const newUrl = new Url({
-        user: decode._id,
-        originalUrl,
-        shortUrl,
-        expirationDate,
-        customKeyword,
-        createdAt: Date.now(),
-      });
-      await newUrl.save();
-
-      // Respond with the shortened URL
-      res.status(201).json({ message: "success", newUrl, status: 201 });
-    } catch (error) {
-      console.error("Error verifying URL:", error.message);
+    // Validate expiration date
+    if (expirationDate && !isValidExpirationDate(expirationDate)) {
       return res
         .status(400)
-        .json({ message: "Invalid or inaccessible URL", status: 400 });
+        .json({ message: "Invalid expiration date", status: 400 });
     }
+
+    // Generate unique shortUrl
+    const shortUUID = new ShortUniqueId({ length: 10 });
+    const shortUrl = customKeyword || shortUUID();
+
+    // Save to database
+    const newUrl = new Url({
+      user: decode._id,
+      originalUrl,
+      shortUrl,
+      expirationDate,
+      customKeyword,
+      createdAt: Date.now(),
+    });
+
+    await newUrl.save();
+
+    res.status(201).json({ message: "Success", newUrl, status: 201 });
   } catch (error) {
     console.error("Error occurred:", error);
-    return res
-      .status(500)
-      .json({ message: "Internal Server Error", status: 500 });
+    res.status(500).json({ message: "Internal Server Error", status: 500 });
   }
 });
 
