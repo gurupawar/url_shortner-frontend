@@ -110,7 +110,14 @@ const Details: React.FC = () => {
   }
 
   if (loader) {
-    return <div style={{ minHeight: "calc(100vh - 112px)" }}>Loading...</div>;
+    return (
+      <div
+        className="container mx-auto flex flex-col justify-center items-center"
+        style={{ minHeight: "calc(100vh - 112px)" }}
+      >
+        Loading...
+      </div>
+    );
   }
   return (
     <div style={{ minHeight: "calc(100vh - 112px)" }}>
