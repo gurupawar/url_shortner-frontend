@@ -72,13 +72,16 @@ const Details: React.FC = () => {
 
     setLoader(true);
     if (token) {
-      const response = await fetch(`https://short-me.onrender.com/api/${id}`, {
-        method: "GET",
-        headers: {
-          authorization: token.token,
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `https://short-url-api-sigma.vercel.app/api/${id}`,
+        {
+          method: "GET",
+          headers: {
+            authorization: token.token,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       const responseData = (await response.json()) as UrlData;
       if (responseData) {

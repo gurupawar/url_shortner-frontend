@@ -43,7 +43,7 @@ const Dashboard: React.FC = () => {
     setLoader(true);
     if (token) {
       const response = await fetch(
-        `https://short-me.onrender.com/api/all-url`,
+        `https://short-url-api-sigma.vercel.app/api/all-url`,
         {
           method: "POST",
           headers: {
@@ -79,7 +79,7 @@ const Dashboard: React.FC = () => {
 
     if (url && url.shortUrl) {
       navigator.clipboard
-        .writeText(`https://short-me.onrender.com/${url.shortUrl}`)
+        .writeText(`https://short-url-api-sigma.vercel.app/${url.shortUrl}`)
         .then(() => {
           toast.success("URL copied to clipboard");
         })
@@ -99,14 +99,17 @@ const Dashboard: React.FC = () => {
         _id: userId,
       };
 
-      const response = await fetch(`https://short-me.onrender.com/api/${id}`, {
-        method: "DELETE",
-        headers: {
-          authorization: userToken,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestBody),
-      });
+      const response = await fetch(
+        `https://short-url-api-sigma.vercel.app/api/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            authorization: userToken,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestBody),
+        }
+      );
 
       const responseData = await response.json();
 
@@ -212,13 +215,13 @@ const Dashboard: React.FC = () => {
               <CardContent>
                 <Link
                   target="_blank"
-                  href={`https://short-me.onrender.com/${
+                  href={`https://short-url-api-sigma.vercel.app/${
                     (url as { shortUrl?: string })?.shortUrl || ""
                   }`}
                   className="flex items-center text-blue-300"
                   style={{ fontSize: "12px" }}
                 >
-                  {`https://short-me.onrender.com/${(
+                  {`https://short-url-api-sigma.vercel.app/${(
                     url as { shortUrl?: string }
                   )?.shortUrl?.substring(0, 28)}`}
 

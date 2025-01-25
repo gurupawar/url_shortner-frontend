@@ -65,7 +65,7 @@ const InputComp: React.FC = () => {
       }
 
       const response = await fetch(
-        `https://short-me.onrender.com/api/shorten/new`,
+        `https://short-url-api-sigma.vercel.app/api/shorten/new`,
         {
           method: "POST",
           headers: {
@@ -100,7 +100,7 @@ const InputComp: React.FC = () => {
   const handleCopy = () => {
     if (url) {
       navigator.clipboard
-        .writeText(`https://short-me.onrender.com/${url}`)
+        .writeText(`https://short-url-api-sigma.vercel.app/${url}`)
         .then(() => {
           toast.success("URL copied to clipboard");
         })
@@ -126,10 +126,10 @@ const InputComp: React.FC = () => {
           {url && (
             <div className="flex items-center mt-2">
               <a
-                href={`https://short-me.onrender.com/${url}`}
+                href={`https://short-url-api-sigma.vercel.app/${url}`}
                 target="_blank"
                 className="text-green-500 text-sm font-semibold"
-              >{`https://short-me.onrender.com/${url}`}</a>
+              >{`https://short-url-api-sigma.vercel.app/${url}`}</a>
               <MdContentCopy
                 className="ms-2 cursor-pointer"
                 onClick={handleCopy}

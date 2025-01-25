@@ -6,7 +6,6 @@ import React from "react";
 import { useMyContext } from "../../context/MyContext";
 import Loader from "@/components/ui/loader";
 
-
 // Sign In logic
 const SignIn: React.FC = () => {
   const router = useRouter();
@@ -21,13 +20,16 @@ const SignIn: React.FC = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("https://short-me.onrender.com/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
+      const response = await fetch(
+        "https://short-url-api-sigma.vercel.app/auth/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
+        }
+      );
 
       const responseData = await response.json();
 
