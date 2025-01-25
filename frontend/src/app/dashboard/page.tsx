@@ -192,12 +192,12 @@ const Dashboard: React.FC = () => {
           {urlList?.map((url, index) => (
             <Card
               key={index}
-              className="w-full relative cursor-pointer"
+              className="w-full relative"
               style={{ maxWidth: "300px", transition: "all 0.3s ease" }}
             >
               <IoIosInformationCircleOutline
                 onClick={() => handleInfo(url as string)}
-                className="absolute top-2 right-2 size-5"
+                className="absolute top-2 right-2 size-5 cursor-pointer"
               />
               <CardHeader>
                 <Link
